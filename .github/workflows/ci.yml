@@ -1,0 +1,80 @@
+# .github/workflows/ci.yml
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1: Lint with ESLint
+  # ─────────────────────────────────────────
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ─────────────────────────────────────────
+  # JOB 2: Format check with Prettier
+  # ─────────────────────────────────────────
+  format:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format
+
+  # ─────────────────────────────────────────
+  # JOB 3: Tests with Jest + Supertest
+  # ─────────────────────────────────────────
+  test:
+    name: Jest Tests
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      ATLASDB_URL: ${{ secrets.ATLASDB_URL }}
+      SECRET: ${{ secrets.SECRET }}
+      CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+      CLOUD_API_KEY: ${{ secrets.CLOUD_API_KEY }}
+      CLOUD_API_SECRET: ${{ secrets.CLOUD_API_SECRET }}
+      MAP_TOKEN: ${{ secrets.MAP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
