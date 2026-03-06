@@ -116,7 +116,11 @@ app.use((err, req, res, next) => {
 // -------------------------
 // SERVER START
 // -------------------------
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 8080;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+module.exports = app; // Required for Vercel serverless
